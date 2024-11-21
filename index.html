@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KıvMer Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            text-align: center;
+        }
+        .quiz-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .question {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+        .answers {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .answer {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .answer:hover {
+            background-color: #e0e0e0;
+        }
+        .submit-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .submit-btn:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 30px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <h1>KıvMer Quiz</h1>
+    <div class="question" id="question"></div>
+    <div class="answers" id="answers"></div>
+    <button class="submit-btn" id="submit-btn">Cevapla</button>
+    <div class="result" id="result"></div>
+</div>
+
+<script>
+    const quizData = [
+        {
+            question: "KıvMer ilk defa hangi bölümde öpüşmüştür?",
+            options: ["8. bölüm", "10. bölüm", "12. bölüm", "6. bölüm"],
+            answer: "10. bölüm"
+        },
+        {
+            question: "KıvMer'in şarkısı hangisidir?",
+            options: ["Bir ilk bahar sabahı", "Söyle canım", "Biliyorsun"],
+            answer: "Bir ilk bahar sabahı"
+        },
+        {
+            question: "KıvMer'in kutsal buluşma noktası neresidir?",
+            options: ["Kafe", "Ev", "Park", "Sahil"],
+            answer: "Kafe"
+        },
+        {
+            question: "KıvMer kaç defa evlenip boşanmıştır?",
+            options: ["1", "2", "3", "4"],
+            answer: "4"
+        },
+        {
+            question: "KıvMer'in ilk boşanmalarında hangi şarkı çalmıştır?",
+            options: ["Nasip değilmiş", "Alışamadım", "Bilir o beni", "Rüyamda buluttum"],
+            answer: "Nasip değilmiş"
+        },
+        {
+            question: "KıvMer'in favori aktivitesi nedir?",
+            options: ["Tavla oynamak", "Sevişmek", "Dans etmek", "Sinemaya gitmek"],
+            answer: "Tavla oynamak"
+        },
+        {
+            question: "Ömer kaçıncı bölümde iç güveysi olmuştur?",
+            options: ["32. bölüm", "34. bölüm", "40. bölüm", "42. bölüm"],
+            answer: "34. bölüm"
+        },
+        {
+            question: "Ömer'in favori aktivitesi nedir?",
+            options: ["Birilerini aşağı atmak", "Futbol oynamak", "Kıvılcımla ayrılmak", "Kitap okumak"],
+            answer: "Birilerini aşağı atmak"
+        },
+        {
+            question: "Kıvılcım şimdiye kadar kaç işte çalışmıştır?",
+            options: ["2", "3", "4", "5"],
+            answer: "4"
+        },
+        {
+            question: "Kıvılcımın sahnede söylediği şarkı hangisidir?",
+            options: ["Rüyamda buluttum", "Bir ilk bahar sabahı", "Bir zamanlar deli gönlüm", "Kaçin kurası"]
+			answer: "Rüyamda buluttum"
+        },
+        {
+            question: "Ömer'in Kıvılcıma temennisi hangisidir?",
+            options: ["Belki bir gün, bu evin kadını sen olursun", "Birlikte bu evde ikimiz yaşarız", "Belki sen de benim karım olursun",],
+            answer: "Belki bir gün, bu evin kadını sen olursun"
+        },
+        {
+            question: "Ömer'in favori şairi kimdir?",
+            options: ["Halil Cibran", "Nazım Hikmet", "Cemal Süreya", "Atilla İlhan"],
+            answer: "Halil Cibran"
+        },
+        {
+            question: "KıvMer hangi şehirde evlenmiştir?",
+            options: ["Paris", "Ankara", "Roma", "Viena"],
+            answer: "İstanbul"
+        },
+        {
+            question: "Kıvılcıma program için mikrofon takıldığında, Ömer'in tepkisi ne olmuştur?",
+            options: ["Adamın biri gelip oranı buranı elliyor", "Çok güzel olmuşsun aşkım", "Kardeş sen uça biliyor musun?",],
+            answer: "Adamın biri gelip oranı buranı elliyor"
+        },
+        {
+            question: "Kıvılcımın Ömer'e ilk evlilik teklifinde, Ömer için aldığı yüzük neydi?",
+            options: ["Altın alyans", "Gümüş alyans", "Her ikisi",],
+            answer: "Gümüş alyans"
+        }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    const questionElement = document.getElementById("question");
+    const answersElement = document.getElementById("answers");
+    const submitButton = document.getElementById("submit-btn");
+    const resultElement = document.getElementById("result");
+
+    function loadQuestion() {
+        const currentQuiz = quizData[currentQuestion];
+        questionElement.textContent = currentQuiz.question;
+        answersElement.innerHTML = "";
+
+        currentQuiz.options.forEach(option => {
+            const button = document.createElement("button");
+            button.classList.add("answer");
+            button.textContent = option;
+            button.onclick = () => {
+                if (option === currentQuiz.answer) {
+                    score++;
+                }
+                currentQuestion++;
+                if (currentQuestion < quizData.length) {
+                    loadQuestion();
+                } else {
+                    showResult();
+                }
+            };
+            answersElement.appendChild(button);
+        });
+    }
+
+    function showResult() {
+        let message = "";
+        if (score <= 5) {
+            message = `${score}/15 - Diziye yeni başlamışsın galiba.`;
+        } else if (score <= 10) {
+            message = `${score}/15 - KıvMerci olmak yolunda emin adımlarla ilerliyorsun, devaaam.`;
+        } else {
+            message = `${score}/15 - İşte gerçek Kıvmerci, KıvMer FC başkanlarımız Evrim ve Barış seninle gurur duyuyor!`;
+        }
+        resultElement.textContent = message;
+    }
+
+    loadQuestion();
+</script>
+
+</body>
+</html>
